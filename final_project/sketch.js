@@ -2,7 +2,6 @@ let circles = [];
 let rectangles = [];
 let semiCircles = [];
 
-
 class NeonCircle {
     constructor(x, y, diameter, angle, proportion) {
         this.x = x;
