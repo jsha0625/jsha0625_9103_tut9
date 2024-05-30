@@ -31,6 +31,8 @@ class NeonCircle {
         let noiseFactorY = noise(newY * 0.01, timeOffset + 1000);  // Use different offsets to avoid syncing X and Y changes
         newX += (noiseFactorX - 0.5) * 50 * scale; // The movement range is -25 to 25
         newY += (noiseFactorY - 0.5) * 50 * scale; // The movement range is -25 to 25
+
+         // Render the neon circle with calculated parameters
         circleNeon(newX, newY, newDiameter, color(120, 100, 100, 100), color(0, 100, 100, 100), newAngle, this.proportion);
     }
 }
@@ -53,9 +55,9 @@ class NeonRectangle {
         let newY = height / 2 + (this.baseY - 390) * scale;
         let newW = this.baseW * scale;
         let newH = this.baseH * scale;
-        fill(this.fillColor);
+        fill(this.fillColor);// Set fill color
         if (this.strokeColor) {
-            stroke(this.strokeColor);
+            stroke(this.strokeColor);// Set stroke color if defined
         } else {
             noStroke();
         }
@@ -269,7 +271,7 @@ function drawPartialCircle(x, y, diameter, col, startAngle, arcLength) {
     for (let a = startAngle; a < startAngle + arcLength; a += 0.01) {
         let sx = x + cos(a) * diameter / 2;
         let sy = y + sin(a) * diameter / 2;
-        vertex(sx, sy);
+        vertex(sx, sy);// Add vertex to shape
     }
     endShape(CLOSE);
 }
@@ -288,6 +290,7 @@ function drawLineSegment(x, y, diameter, angle, arcLength) {
 
 
 function glowLine(x, y, diameter, angle, arcLength, col, blurs) {
+     // Apply glow effect with varying blur levels and draw line segments
     for (let blur of blurs) {
         glow(col, blur);
         drawLineSegment(x, y, diameter, angle, arcLength);
@@ -296,10 +299,10 @@ function glowLine(x, y, diameter, angle, arcLength, col, blurs) {
 
 
 function glow(glowColor, blurriness) {
-    drawingContext.shadowBlur = blurriness;
-    drawingContext.shadowColor = glowColor;
+    drawingContext.shadowBlur = blurriness;// Set shadow blur for glow effect
+    drawingContext.shadowColor = glowColor;// Set shadow color for glow effect
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+    resizeCanvas(windowWidth, windowHeight);// Adjust canvas size on window resize
 }
