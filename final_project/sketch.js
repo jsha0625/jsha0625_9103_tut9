@@ -7,50 +7,59 @@ let lightning = false;
 
 class NeonCircle {
     constructor(x, y, diameter, angle, proportion) {
-        this.x = x;
-        this.y = y;
-        this.diameter = diameter;
-        this.angle = angle;
-        this.proportion = proportion;
         this.baseX = x;
         this.baseY = y;
+        this.baseDiameter = diameter;
+        this.angle = angle;
+        this.proportion = proportion;
     }
 
 
-    draw() {
-        // Generate new angles and positions using Perlin noise
-        let noiseFactorAngle = noise(this.baseX * 0.01, this.baseY * 0.01, timeOffset);
-        let newAngle = this.angle + noiseFactorAngle * PI;
-        
-        let noiseFactorX = noise(this.baseX * 0.01, timeOffset);
-        let noiseFactorY = noise(this.baseY * 0.01, timeOffset + 1000);  // Use different offsets to avoid syncing X and Y changes
-        let newX = this.baseX + (noiseFactorX - 0.5) * 50; // The movement range is -25 to 25
-        let newY = this.baseY + (noiseFactorY - 0.5) * 50; // The movement range is -25 to 25
+    draw(scale) {
 
-        circleNeon(newX, newY, this.diameter, color(120, 100, 100, 100), color(0, 100, 100, 100), newAngle, this.proportion);
+        // Adjust positions based on window size and scale
+        let newX = width / 2 + (this.baseX - 265) * scale;
+        let newY = height / 2 + (this.baseY - 390) * scale;
+        let newDiameter = this.baseDiameter * scale;
+
+
+        // Generate new angles and positions using Perlin noise
+        let noiseFactorAngle = noise(newX * 0.01, newY * 0.01, timeOffset);
+        let newAngle = this.angle + noiseFactorAngle * PI;
+
+        let noiseFactorX = noise(newX * 0.01, timeOffset);
+        let noiseFactorY = noise(newY * 0.01, timeOffset + 1000);  // Use different offsets to avoid syncing X and Y changes
+        newX += (noiseFactorX - 0.5) * 50 * scale; // The movement range is -25 to 25
+        newY += (noiseFactorY - 0.5) * 50 * scale; // The movement range is -25 to 25
+        circleNeon(newX, newY, newDiameter, color(120, 100, 100, 100), color(0, 100, 100, 100), newAngle, this.proportion);
     }
 }
 
 
 class NeonRectangle {
     constructor(x, y, w, h, fillColor, strokeColor) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
+        this.baseX = x;
+        this.baseY = y;
+        this.baseW = w;
+        this.baseH = h;
         this.fillColor = fillColor;
         this.strokeColor = strokeColor;
     }
 
 
-    draw() {
+    draw(scale) {
+        // Adjust positions based on window size and scale
+        let newX = width / 2 + (this.baseX - 265) * scale;
+        let newY = height / 2 + (this.baseY - 390) * scale;
+        let newW = this.baseW * scale;
+        let newH = this.baseH * scale;
         fill(this.fillColor);
         if (this.strokeColor) {
             stroke(this.strokeColor);
         } else {
             noStroke();
         }
-        rect(this.x, this.y, this.w, this.h);
+        rect(newX, newY, newW, newH);
     }
 }
 
@@ -65,16 +74,21 @@ class NeonSemiCircle {
     }
 
 
-    draw() {
+    draw(scale) {
+        // Adjust positions based on window size and scale
+        let newX = width / 2 + (this.baseX - 265) * scale;
+        let newY = height / 2 + (this.baseY - 390) * scale;
+        let newW = this.baseW * scale;
+        let newH = this.baseH * scale;
         fill(this.fillColor);
         noStroke();
-        arc(this.x, this.y, this.w, this.h, PI, 0, CHORD);
+        arc(newX, newY, newW, newH, PI, 0, CHORD);
     }
 }
 
 
 function setup() {
-    createCanvas(530, 780);
+    createCanvas(windowWidth, windowHeight);
     colorMode(HSB, 360, 100, 100, 100);
 
 
@@ -158,6 +172,10 @@ function setup() {
 
 
 function draw() {
+    // Determine the scaling factor based on the window size
+    let scale = min(windowWidth / 530, windowHeight / 780);
+
+
     //A random number check determines if lightning should start. This happens only 1% of the time.
     //If lightning is triggered, the background turns white, simulating a lightning flash. There's a 10% chance the lightning will stop on each frame, returning to the normal state.
     //When there's no lightning, the background is black, representing a clear or unlit sky.
@@ -179,19 +197,19 @@ function draw() {
 
     // Draw rectangles
     for (let rect of rectangles) {
-        rect.draw();
+        rect.draw(scale);
     }
 
 
     // Draw semi-circles
     for (let semiCircle of semiCircles) {
-        semiCircle.draw();
+        semiCircle.draw(scale);
     }
 
 
     // Draw circles
     for (let circle of circles) {
-        circle.draw();
+        circle.draw(scale);
     }
 
     drawRain();
@@ -280,4 +298,8 @@ function glowLine(x, y, diameter, angle, arcLength, col, blurs) {
 function glow(glowColor, blurriness) {
     drawingContext.shadowBlur = blurriness;
     drawingContext.shadowColor = glowColor;
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
 }
