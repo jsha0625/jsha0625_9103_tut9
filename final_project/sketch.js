@@ -1,6 +1,7 @@
 let circles = [];
 let rectangles = [];
 let semiCircles = [];
+let timeOffset = 0;
 
 class NeonCircle {
     constructor(x, y, diameter, angle, proportion) {
@@ -9,11 +10,22 @@ class NeonCircle {
         this.diameter = diameter;
         this.angle = angle;
         this.proportion = proportion;
+        this.baseX = x;
+        this.baseY = y;
     }
 
 
     draw() {
-        circleNeon(this.x, this.y, this.diameter, color(120, 100, 100, 100), color(0, 100, 100, 100), this.angle, this.proportion);
+        // Generate new angles and positions using Perlin noise
+        let noiseFactorAngle = noise(this.baseX * 0.01, this.baseY * 0.01, timeOffset);
+        let newAngle = this.angle + noiseFactorAngle * PI;
+        
+        let noiseFactorX = noise(this.baseX * 0.01, timeOffset);
+        let noiseFactorY = noise(this.baseY * 0.01, timeOffset + 1000);  // Use different offsets to avoid syncing X and Y changes
+        let newX = this.baseX + (noiseFactorX - 0.5) * 50; // The movement range is -25 to 25
+        let newY = this.baseY + (noiseFactorY - 0.5) * 50; // The movement range is -25 to 25
+
+        circleNeon(newX, newY, this.diameter, color(120, 100, 100, 100), color(0, 100, 100, 100), newAngle, this.proportion);
     }
 }
 
@@ -145,6 +157,8 @@ function setup() {
 
 function draw() {
     background(0); // Set the background to black
+
+    timeOffset += 0.01; // Add time offset for Perlin noise
 
 
     // Draw rectangles
