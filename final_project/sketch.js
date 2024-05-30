@@ -2,6 +2,8 @@ let circles = [];
 let rectangles = [];
 let semiCircles = [];
 let timeOffset = 0;
+let lightning = false;
+
 
 class NeonCircle {
     constructor(x, y, diameter, angle, proportion) {
@@ -156,7 +158,21 @@ function setup() {
 
 
 function draw() {
-    background(0); // Set the background to black
+    //A random number check determines if lightning should start. This happens only 1% of the time.
+    //If lightning is triggered, the background turns white, simulating a lightning flash. There's a 10% chance the lightning will stop on each frame, returning to the normal state.
+    //When there's no lightning, the background is black, representing a clear or unlit sky.
+    if (random(1) > 0.99) {
+        lightning = true;
+    }
+    if (lightning) {
+        background(255);
+        if (random(1) > 0.9) {
+            lightning = false;
+        }
+    } else {
+        background(0);
+    }
+
 
     timeOffset += 0.01; // Add time offset for Perlin noise
 
@@ -176,6 +192,21 @@ function draw() {
     // Draw circles
     for (let circle of circles) {
         circle.draw();
+    }
+
+    drawRain();
+
+}
+
+    // Draw rains
+function drawRain() {
+    stroke(190, 100, 100, 50); // Use light blue to represent raindrops
+    let rainIntensity = 50; // Number of raindrops
+    for (let i = 0; i < rainIntensity; i++) {
+        let x = random(width);
+        let y = random(height);
+        let length = random(20, 30); // Raindrop length
+        line(x, y, x - length / 2, y + length); // Tilt the raindrops, from top right to bottom left
     }
 }
 
