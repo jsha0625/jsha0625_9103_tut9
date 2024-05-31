@@ -1,8 +1,8 @@
 let circles = [];
 let rectangles = [];
 let semiCircles = [];
-let timeOffset = 0;
-let lightning = false;
+let timeOffset = 0;//This will be used in Perlin noise later.
+let lightning = false;//This will be used to control the background, but initial it false first.
 
 
 class NeonCircle {
@@ -15,6 +15,8 @@ class NeonCircle {
     }
 
 
+    //This was in a stable size canvas, but to resize the windows as changing, make it a scale.
+    //And here also make the size, the angle,and the position changed with Perlin noise.
     draw(scale) {
 
         // Adjust positions based on window size and scale
@@ -31,6 +33,11 @@ class NeonCircle {
         let noiseFactorY = noise(newY * 0.01, timeOffset + 1000);  // Use different offsets to avoid syncing X and Y changes
         newX += (noiseFactorX - 0.5) * 50 * scale; // The movement range is -25 to 25
         newY += (noiseFactorY - 0.5) * 50 * scale; // The movement range is -25 to 25
+
+        // Generate a new size using Perlin noise
+        let noiseFactorSize = noise(timeOffset, newX * 0.01);
+        let sizeVariation = (noiseFactorSize - 0.5) * 20 * scale; // The size variation range is -10 to 10
+        newDiameter += sizeVariation;
 
          // Render the neon circle with calculated parameters
         circleNeon(newX, newY, newDiameter, color(120, 100, 100, 100), color(0, 100, 100, 100), newAngle, this.proportion);
@@ -61,7 +68,7 @@ class NeonRectangle {
         } else {
             noStroke();
         }
-        rect(newX, newY, newW, newH);
+        rect(newX, newY, newW, newH);//All changed to adapt to the new canvas scale changing.
     }
 }
 
@@ -84,7 +91,8 @@ class NeonSemiCircle {
         let newH = this.baseH * scale;
         fill(this.fillColor);
         noStroke();
-        arc(newX, newY, newW, newH, PI, 0, CHORD);
+        arc(newX, newY, newW, newH, PI, 0, CHORD);//All changed to adapt to the new canvas scale changing.
+        //Chord is a constant that specifies the drawing mode. CHORD mode draws a straight line between the two endpoints of the arc, forming a chord.
     }
 }
 
@@ -100,7 +108,7 @@ function setup() {
 
 
     imageMode(CENTER);
-    pixelDensity(2);
+    pixelDensity(2);//This is for smoother graphics.
 
 
     // Initialize circles
@@ -235,6 +243,9 @@ function circleNeon(x, y, diameter, color1, color2, angle, proportion) {
     let greenAngle = proportion * PI * 2;
     let redAngle = (1 - proportion) * PI * 2;
 
+    //Code down below about the glow effect was from youtube
+    //https://www.youtube.com/watch?v=iIWH3IUYHzM
+    //https://www.youtube.com/watch?v=iIWH3IUYHzM&t=115s
 
     // Apply glow effect for the first part (green)
     glow(color1, 400);
